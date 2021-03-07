@@ -28,6 +28,12 @@ public:
 
     class iterator {
     public:
+        using difference_type = long;
+        using value_type = TNode;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
         TContainer* mContainer;
         typename TContainer::iterator mContainerIterator;
         typename std::forward_list<TNode>::iterator mBucketIterator;
@@ -47,6 +53,12 @@ public:
 
     class const_iterator {
     public:
+        using difference_type = long;
+        using value_type = const TNode;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
         const TContainer* mContainer;
         typename TContainer::const_iterator mContainerIterator;
         typename std::forward_list<TNode>::const_iterator mBucketIterator;
@@ -106,6 +118,7 @@ HashMap<TKey, TValue, THash>::HashMap(THash hash) : mHasher(hash) {
 template <class TKey, class TValue, class THash>
 template <typename IteratorType>
 HashMap<TKey, TValue, THash>::HashMap(IteratorType begin, IteratorType end, THash hash) : HashMap(hash) {
+    resize(std::distance(begin, end));
     for (auto iter = begin; iter != end; ++iter) {
         insert(*iter);
     }
@@ -125,6 +138,7 @@ HashMap<TKey, TValue, THash>& HashMap<TKey, TValue, THash>::operator=(const Hash
         return *this;
     }
     clear();
+    resize(other.size());
     mHasher = other.mHasher;
     for (const auto& i : other) {
         insert(i);
